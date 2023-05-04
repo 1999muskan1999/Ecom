@@ -11,7 +11,7 @@ app.post("/", function(req, res) {
   const user = req.body.email;
   const pass = req.body.password;
 
-  axios.get("https://api.jsonbin.io/v3/b/645375769d312622a3573aae", {
+  axios.get("https://api.jsonbin.io/v3/b/64538b428e4aa6225e9616ae", {
     headers: {
       "X-Master-Key": "$2b$10$JzSYvU8PVI5HewovGwvL/uCMh.LsojB4HZP0LuNcKshGUFgv3qlIC"
     }
@@ -19,8 +19,7 @@ app.post("/", function(req, res) {
   .then(response => {
     const data = response.data.record;
     console.log(data);
-    var data1 =[data];
-    const validUser = data1.find(u => u.username === user && u.password === pass);
+    const validUser = data.find(u => u.username === user && u.password === pass);
 
     if (validUser) {
       res.sendFile(__dirname + "/index.html");
@@ -38,25 +37,39 @@ app.post("/", function(req, res) {
 app.post("/signup", function(req, res) {
   const user = req.body.email;
   const pass = req.body.password;
-
-  axios.put("https://api.jsonbin.io/v3/b/645375769d312622a3573aae", {
+  var newdata={
     "username": user,
     "password": pass
-  }, {
+  };
+  axios.get("https://api.jsonbin.io/v3/b/64538b428e4aa6225e9616ae", {
     headers: {
-      "Content-Type": "application/json",
       "X-Master-Key": "$2b$10$JzSYvU8PVI5HewovGwvL/uCMh.LsojB4HZP0LuNcKshGUFgv3qlIC"
     }
   })
   .then(response => {
-    res.sendFile(__dirname + "/login.html");
+    var data = response.data.record;
+    data.push(newdata);
+    // console.log(data);
+    axios.put("https://api.jsonbin.io/v3/b/64538b428e4aa6225e9616ae",data, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": "$2b$10$JzSYvU8PVI5HewovGwvL/uCMh.LsojB4HZP0LuNcKshGUFgv3qlIC"
+      }
+    })
+    .then(response => {
+      res.sendFile(__dirname + "/login.html");
+    })
+    .catch(error => {
+      console.error(error);
+      res.send("Error writing data to server");
+    });
   })
   .catch(error => {
     console.error(error);
-    res.send("Error writing data to server");
+    res.send("Error");
   });
-});
 
+});
 app.get("/register", function(req, res) {
   res.sendFile(__dirname + "/register.html");
 });
