@@ -11,7 +11,7 @@ app.post("/", function(req, res) {
   const user = req.body.email;
   const pass = req.body.password;
   var validUser="";
-  fs.readFile(__dirname+'/data.json', 'utf8', (err, jsonString) => {
+  fs.readFile('data.json', 'utf8', (err, jsonString) => {
     if (err) {
       console.error(err);
     } else {
